@@ -1,0 +1,66 @@
+<xml xmlns:v="urn:schemas-microsoft-com:vml"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel">
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="26"/>
+ </o:shapelayout><v:shapetype id="_x0000_t201" coordsize="21600,21600" o:spt="201"
+  path="m,l,21600r21600,l21600,xe">
+  <v:stroke joinstyle="miter"/>
+  <v:path shadowok="f" o:extrusionok="f" strokeok="f" fillok="f" o:connecttype="rect"/>
+  <o:lock v:ext="edit" shapetype="t"/>
+ </v:shapetype><v:shape id="_x0000_s26625" type="#_x0000_t201" style='position:absolute;
+  margin-left:165.5pt;margin-top:167pt;width:31.5pt;height:20pt;z-index:1;
+  mso-wrap-style:tight' filled="f" fillcolor="window [65]" stroked="f"
+  strokecolor="windowText [64]" o:insetmode="auto">
+  <v:path shadowok="t" strokeok="t" fillok="t"/>
+  <o:lock v:ext="edit" rotation="t"/>
+  <v:textbox style='mso-direction-alt:auto' o:singleclick="f">
+   <div style='text-align:left'></div>
+  </v:textbox>
+  <x:ClientData ObjectType="Checkbox">
+   <x:SizeWithCells/>
+   <x:Anchor>
+    2, 11, 10, 28, 4, 20, 12, 11</x:Anchor>
+   <x:AutoFill>False</x:AutoFill>
+   <x:AutoLine>False</x:AutoLine>
+   <x:TextVAlign>Center</x:TextVAlign>
+   <x:Checked>1</x:Checked>
+   <x:NoThreeD/>
+  </x:ClientData>
+ </v:shape><v:shape id="_x0000_s26626" type="#_x0000_t201" style='position:absolute;
+  margin-left:165.5pt;margin-top:219.5pt;width:18.5pt;height:20pt;z-index:2;
+  mso-wrap-style:tight' filled="f" fillcolor="window [65]" stroked="f"
+  strokecolor="windowText [64]" o:insetmode="auto">
+  <v:path shadowok="t" strokeok="t" fillok="t"/>
+  <o:lock v:ext="edit" rotation="t"/>
+  <v:textbox style='mso-direction-alt:auto' o:singleclick="f">
+   <div style='text-align:left'></div>
+  </v:textbox>
+  <x:ClientData ObjectType="Checkbox">
+   <x:SizeWithCells/>
+   <x:Anchor>
+    2, 11, 14, 18, 3, 16, 16, 2</x:Anchor>
+   <x:AutoFill>False</x:AutoFill>
+   <x:AutoLine>False</x:AutoLine>
+   <x:TextVAlign>Center</x:TextVAlign>
+   <x:NoThreeD/>
+  </x:ClientData>
+ </v:shape><v:shape id="_x0000_s26627" type="#_x0000_t201" style='position:absolute;
+  margin-left:399.5pt;margin-top:220.5pt;width:22.5pt;height:20pt;z-index:3;
+  mso-wrap-style:tight' filled="f" fillcolor="window [65]" stroked="f"
+  strokecolor="windowText [64]" o:insetmode="auto">
+  <v:path shadowok="t" strokeok="t" fillok="t"/>
+  <o:lock v:ext="edit" rotation="t"/>
+  <v:textbox style='mso-direction-alt:auto' o:singleclick="f">
+   <div style='text-align:left'></div>
+  </v:textbox>
+  <x:ClientData ObjectType="Checkbox">
+   <x:SizeWithCells/>
+   <x:Anchor>
+    16, 19, 14, 20, 18, 0, 16, 4</x:Anchor>
+   <x:AutoFill>False</x:AutoFill>
+   <x:AutoLine>False</x:AutoLine>
+   <x:TextVAlign>Center</x:TextVAlign>
+   <x:NoThreeD/>
+  </x:ClientData>
+ </v:shape></xml>
