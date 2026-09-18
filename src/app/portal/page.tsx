@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useStore } from '@/lib/store';
 import { getStudentVoucher, verifyStudentVoucher } from '@/lib/vouchers';
 import { Learner } from '@/types';
+import { INITIAL_TERM1_GRADES, INITIAL_ATTENDANCE } from '@/lib/seed-data';
 import { 
   KeyRound, 
   Search, 
@@ -43,6 +44,24 @@ export default function StudentPortalPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [displayMode, setDisplayMode] = useState<'flip' | 'side-by-side'>('flip');
 
+  // Auto-detect URL query params (?lrn=...&voucher=...) from Voucher Manager preview
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlLrn = params.get('lrn');
+      const urlVoucher = params.get('voucher');
+      if (urlLrn || urlVoucher) {
+        if (urlLrn) setLrnInput(urlLrn);
+        if (urlVoucher) setVoucherInput(urlVoucher);
+        const verification = verifyStudentVoucher(urlLrn || '', urlVoucher || '', learners);
+        if (verification.isValid && verification.learner) {
+          setActiveLearner(verification.learner);
+          setIsFlipped(false);
+        }
+      }
+    }
+  }, [learners]);
+
   // Keyboard shortcut to flip card (Space or 'F')
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -63,7 +82,7 @@ export default function StudentPortalPage() {
 
     const verification = verifyStudentVoucher(lrnInput, voucherInput, learners);
     if (!verification.isValid || !verification.learner) {
-      setAuthError(verification.message || 'Invalid LRN or Voucher Code. Please try again.');
+      setAuthError(verification.message || 'Invalid LRN or Voucher Code. Please verify your credentials or contact your class adviser (Teacher Kathy A. Garcia).');
       return;
     }
 
@@ -77,6 +96,9 @@ export default function StudentPortalPage() {
     setVoucherInput(voucher);
     setAuthError(null);
     setShowDemoModal(false);
+    // Directly log the learner in for instant testing
+    setActiveLearner(learner);
+    setIsFlipped(false);
   };
 
   const handleSignOut = () => {
@@ -100,8 +122,10 @@ export default function StudentPortalPage() {
 
   // If a student is authenticated, show their SF9 Report Card
   if (activeLearner) {
-    const grades = term1Grades.find(g => g.learnerId === activeLearner.id);
-    const att = attendance.find(a => a.learnerId === activeLearner.id);
+    const allGrades = (term1Grades && term1Grades.length > 0) ? term1Grades : INITIAL_TERM1_GRADES;
+    const allAtt = (attendance && attendance.length > 0) ? attendance : INITIAL_ATTENDANCE;
+    const grades = allGrades.find(g => g.learnerId === activeLearner.id || g.lrn === activeLearner.lrn);
+    const att = allAtt.find(a => a.learnerId === activeLearner.id || a.lrn === activeLearner.lrn);
 
     // Fallback safe values if not fully populated
     const q1Avg = grades ? grades.average : 85;
