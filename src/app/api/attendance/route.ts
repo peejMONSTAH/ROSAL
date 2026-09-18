@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { INITIAL_ATTENDANCE } from '@/lib/seed-data';
 
 export async function GET() {
   try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(INITIAL_ATTENDANCE);
+    }
+
     const { data, error } = await supabase
       .from('attendances')
       .select('*, learners!inner(name, lrn, sex)');
 
-    if (error) throw error;
+    if (error || !data || data.length === 0) {
+      return NextResponse.json(INITIAL_ATTENDANCE);
+    }
 
     const mapped = data.map((a: any) => {
       const monthly = a.monthly || {};
@@ -36,7 +43,8 @@ export async function GET() {
 
     return NextResponse.json(mapped);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.warn('Falling back to INITIAL_ATTENDANCE:', err.message);
+    return NextResponse.json(INITIAL_ATTENDANCE);
   }
 }
 

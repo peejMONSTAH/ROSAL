@@ -50,15 +50,18 @@ export function Header() {
       {/* Right Actions & Profile */}
       <div className="flex items-center space-x-3.5">
         {/* Supabase Status */}
-        {dbError ? (
-          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-            <span className="w-2 h-2 rounded-full bg-rose-500" />
-            <span>DB Error</span>
+        {dbError || !isDbConnected ? (
+          <div 
+            className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 cursor-help"
+            title="Running in Offline Demo Mode. Add Supabase Environment Variables in Vercel to sync live database."
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>Offline Demo</span>
           </div>
         ) : (
-          <div className={`hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${isDbConnected ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-            <span className={`w-2 h-2 rounded-full ${isDbConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500 animate-pulse'}`} />
-            <span>{isSyncing ? 'Syncing...' : isDbConnected ? 'Supabase Live' : 'Connecting...'}</span>
+          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{isSyncing ? 'Syncing...' : 'Supabase Live'}</span>
           </div>
         )}
 

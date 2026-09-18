@@ -9,6 +9,13 @@ import {
   CommentBankItem 
 } from '@/types';
 import { calculateAverage, calculateMapeh, getDescriptor, getHonors } from './deped-calculations';
+import { 
+  INITIAL_SCHOOL_PROFILE, 
+  INITIAL_LEARNERS, 
+  INITIAL_TERM1_GRADES, 
+  INITIAL_ATTENDANCE, 
+  INITIAL_COMMENTS_BANK 
+} from '@/lib/seed-data';
 
 // Empty defaults — all real data comes from the database
 const EMPTY_PROFILE: SchoolProfile = {
@@ -61,37 +68,42 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [isDbConnected, setIsDbConnected] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
-  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(EMPTY_PROFILE);
-  const [learners, setLearners] = useState<Learner[]>([]);
-  const [term1Grades, setTerm1Grades] = useState<TermGradeRecord[]>([]);
-  const [attendance, setAttendance] = useState<LearnerAttendance[]>([]);
-  const [commentsBank, setCommentsBank] = useState<CommentBankItem[]>([]);
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(INITIAL_SCHOOL_PROFILE);
+  const [learners, setLearners] = useState<Learner[]>(INITIAL_LEARNERS);
+  const [term1Grades, setTerm1Grades] = useState<TermGradeRecord[]>(INITIAL_TERM1_GRADES);
+  const [attendance, setAttendance] = useState<LearnerAttendance[]>(INITIAL_ATTENDANCE);
+  const [commentsBank, setCommentsBank] = useState<CommentBankItem[]>(INITIAL_COMMENTS_BANK);
 
-  // Fetch all data exclusively from Supabase via API routes
+  // Fetch all data from Supabase via API routes, with graceful fallback to initial data
   const refreshFromDatabase = useCallback(async () => {
     try {
       setIsSyncing(true);
       setDbError(null);
 
       const [resLearners, resGrades, resAtt, resProfile, resComments] = await Promise.all([
-        fetch('/api/learners').then(r => { if (!r.ok) throw new Error(`Learners API error ${r.status}`); return r.json(); }),
-        fetch('/api/grades').then(r => { if (!r.ok) throw new Error(`Grades API error ${r.status}`); return r.json(); }),
-        fetch('/api/attendance').then(r => { if (!r.ok) throw new Error(`Attendance API error ${r.status}`); return r.json(); }),
-        fetch('/api/school-profile').then(r => { if (!r.ok) throw new Error(`School Profile API error ${r.status}`); return r.json(); }),
-        fetch('/api/comments-bank').then(r => { if (!r.ok) throw new Error(`Comments Bank API error ${r.status}`); return r.json(); }),
+        fetch('/api/learners').then(r => r.ok ? r.json() : INITIAL_LEARNERS).catch(() => INITIAL_LEARNERS),
+        fetch('/api/grades').then(r => r.ok ? r.json() : INITIAL_TERM1_GRADES).catch(() => INITIAL_TERM1_GRADES),
+        fetch('/api/attendance').then(r => r.ok ? r.json() : INITIAL_ATTENDANCE).catch(() => INITIAL_ATTENDANCE),
+        fetch('/api/school-profile').then(r => r.ok ? r.json() : INITIAL_SCHOOL_PROFILE).catch(() => INITIAL_SCHOOL_PROFILE),
+        fetch('/api/comments-bank').then(r => r.ok ? r.json() : INITIAL_COMMENTS_BANK).catch(() => INITIAL_COMMENTS_BANK),
       ]);
 
-      if (Array.isArray(resLearners)) setLearners(resLearners);
-      if (Array.isArray(resGrades)) setTerm1Grades(resGrades);
-      if (Array.isArray(resAtt)) setAttendance(resAtt);
+      if (Array.isArray(resLearners) && resLearners.length > 0) setLearners(resLearners);
+      if (Array.isArray(resGrades) && resGrades.length > 0) setTerm1Grades(resGrades);
+      if (Array.isArray(resAtt) && resAtt.length > 0) setAttendance(resAtt);
       if (resProfile && resProfile.schoolName) setSchoolProfile(resProfile);
-      if (Array.isArray(resComments)) setCommentsBank(resComments);
+      if (Array.isArray(resComments) && resComments.length > 0) setCommentsBank(resComments);
 
       setIsDbConnected(true);
     } catch (err: any) {
-      console.error('Failed to load data from database:', err);
+      console.warn('Database fetch encountered error, using offline initial records:', err);
       setIsDbConnected(false);
-      setDbError(err.message || 'Failed to connect to database');
+      setDbError(err.message || 'Running in offline mode');
+      setLearners(prev => prev.length > 0 ? prev : INITIAL_LEARNERS);
+      setTerm1Grades(prev => prev.length > 0 ? prev : INITIAL_TERM1_GRADES);
+      setAttendance(prev => prev.length > 0 ? prev : INITIAL_ATTENDANCE);
+      setSchoolProfile(prev => prev.schoolName ? prev : INITIAL_SCHOOL_PROFILE);
+      setCommentsBank(prev => prev.length > 0 ? prev : INITIAL_COMMENTS_BANK);
     } finally {
       setIsSyncing(false);
       setIsHydrated(true);

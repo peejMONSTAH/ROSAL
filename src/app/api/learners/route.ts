@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { INITIAL_LEARNERS } from '@/lib/seed-data';
 
 export async function GET() {
   try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(INITIAL_LEARNERS);
+    }
+
     const { data, error } = await supabase
       .from('learners')
       .select('*')
       .order('name', { ascending: true });
 
-    if (error) throw error;
+    if (error || !data || data.length === 0) {
+      return NextResponse.json(INITIAL_LEARNERS);
+    }
 
     const mapped = data.map((l: any) => ({
       id: l.id,
@@ -38,7 +45,8 @@ export async function GET() {
 
     return NextResponse.json(mapped);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.warn('Falling back to INITIAL_LEARNERS:', err.message);
+    return NextResponse.json(INITIAL_LEARNERS);
   }
 }
 

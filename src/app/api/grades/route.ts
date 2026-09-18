@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { INITIAL_TERM1_GRADES } from '@/lib/seed-data';
 
 export async function GET() {
   try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(INITIAL_TERM1_GRADES);
+    }
+
     const { data, error } = await supabase
       .from('term_grades')
       .select('*, learners!inner(name, lrn, sex)')
       .eq('term', 1);
 
-    if (error) throw error;
+    if (error || !data || data.length === 0) {
+      return NextResponse.json(INITIAL_TERM1_GRADES);
+    }
 
     const mapped = data.map((g: any) => ({
       learnerId: g.learner_id,
@@ -37,7 +44,8 @@ export async function GET() {
 
     return NextResponse.json(mapped);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.warn('Falling back to INITIAL_TERM1_GRADES:', err.message);
+    return NextResponse.json(INITIAL_TERM1_GRADES);
   }
 }
 

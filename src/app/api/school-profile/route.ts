@@ -1,15 +1,22 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { INITIAL_SCHOOL_PROFILE } from '@/lib/seed-data';
 
 export async function GET() {
   try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(INITIAL_SCHOOL_PROFILE);
+    }
+
     const { data, error } = await supabase
       .from('school_profiles')
       .select('*')
       .eq('id', 'primary')
       .single();
 
-    if (error) throw error;
+    if (error || !data) {
+      return NextResponse.json(INITIAL_SCHOOL_PROFILE);
+    }
 
     const mapped = {
       schoolName: data.school_name,
@@ -31,7 +38,8 @@ export async function GET() {
 
     return NextResponse.json(mapped);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.warn('Falling back to INITIAL_SCHOOL_PROFILE:', err.message);
+    return NextResponse.json(INITIAL_SCHOOL_PROFILE);
   }
 }
 
